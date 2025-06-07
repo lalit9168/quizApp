@@ -1,9 +1,23 @@
 import React, { useState } from "react";
-import axios from "axios";
+import {
+  Box,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  IconButton,
+  Checkbox,
+  FormControlLabel,
+  Fade,
+  useTheme,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import StarsIcon from "@mui/icons-material/Stars";
 
 function LoginPage() {
   const navigate = useNavigate();
+  const theme = useTheme();
   const [isRegister, setIsRegister] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -40,97 +54,161 @@ function LoginPage() {
   };
 
   return (
-    <div className="d-flex align-items-center justify-content-center min-vh-100 bg-gradient bg-primary bg-opacity-75">
-      <div
-        className="card shadow-lg p-4"
-        style={{ maxWidth: "400px", width: "100%", borderRadius: "1rem" }}
-      >
-        <div className="text-center mb-4">
-          <div
-            className="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center"
-            style={{ width: "60px", height: "60px" }}
-          >
-            <i className="bi bi-question-circle fs-3"></i>
-          </div>
-          <h3 className="mt-3">
-            {isRegister ? "Create an Account" : "Welcome to Quizz!"}
-          </h3>
-        </div>
-        <div className="form-group mb-3">
-          <label>Email</label>
-          <input
-            type="email"
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background:
+          "linear-gradient(to right, #0f2027, #203a43, #2c5364) no-repeat",
+      }}
+    >
+      <Fade in timeout={600}>
+        <Paper
+          elevation={8}
+          sx={{
+            backdropFilter: "blur(16px)",
+            background: "rgba(255, 255, 255, 0.05)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            padding: 5,
+            borderRadius: 4,
+            maxWidth: 400,
+            width: "90%",
+            color: "#fff",
+          }}
+        >
+          <Box textAlign="center" mb={3}>
+            <IconButton
+              sx={{
+                background:
+                  "linear-gradient(45deg, #00feba, #5b86e5)",
+                color: "#fff",
+                width: 60,
+                height: 60,
+                borderRadius: "50%",
+                boxShadow: "0 0 20px #00feba",
+              }}
+            >
+              <StarsIcon fontSize="large" />
+            </IconButton>
+            <Typography variant="h5" mt={2} fontWeight="bold">
+              {isRegister ? "Create an Account" : "Welcome to Quizz!"}
+            </Typography>
+          </Box>
+
+          <TextField
+            fullWidth
+            label="Email"
+            variant="filled"
             name="email"
-            className="form-control"
             value={formData.email}
             onChange={handleChange}
-            placeholder="Enter your email"
+            sx={{
+              mb: 2,
+              input: { color: "white" },
+              "& .MuiFilledInput-root": {
+                backgroundColor: "rgba(255,255,255,0.1)",
+                borderRadius: 1,
+              },
+            }}
           />
-        </div>
-        <div className="form-group mb-3">
-          <label>Password</label>
-          <input
+          <TextField
+            fullWidth
+            label="Password"
             type="password"
+            variant="filled"
             name="password"
-            className="form-control"
             value={formData.password}
             onChange={handleChange}
-            placeholder="Enter your password"
+            sx={{
+              mb: 2,
+              input: { color: "white" },
+              "& .MuiFilledInput-root": {
+                backgroundColor: "rgba(255,255,255,0.1)",
+                borderRadius: 1,
+              },
+            }}
           />
-        </div>
-        {isRegister && (
-          <div className="form-check mb-3">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id="adminCheck"
-              name="role"
-              checked={formData.role === "admin"}
-              onChange={handleChange}
-            />
-            <label className="form-check-label" htmlFor="adminCheck">
-              Register as Admin
-            </label>
-          </div>
-        )}
-        <button className="btn btn-primary w-100 mb-3" onClick={handleSubmit}>
-          {isRegister ? "Register" : "Log In"}
-        </button>
-        <div className="text-center">
-          {isRegister ? (
-            <small>
-              Already have an account?{" "}
-              <button
-                className="btn btn-link p-0"
-                onClick={() => setIsRegister(false)}
-              >
-                Log in
-              </button>
-            </small>
-          ) : (
-            <small>
-              Don’t have an account?{" "}
-              <button
-                className="btn btn-link p-0"
-                onClick={() => setIsRegister(true)}
-              >
-                Register
-              </button>
-            </small>
-          )}
-        </div>
-      </div>
 
-      {/* New button below the card */}
-      <div className="text-center mt-3">
-        <button
-          className="btn btn-outline-light"
-          onClick={() => navigate("/guest-quiz-entry")}
-        >
-          Have a Code? Enter Quiz
-        </button>
-      </div>
-    </div>
+          {isRegister && (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={formData.role === "admin"}
+                  onChange={handleChange}
+                  name="role"
+                  sx={{ color: "#00feba" }}
+                />
+              }
+              label="Register as Admin"
+              sx={{ color: "#fff", mb: 2 }}
+            />
+          )}
+
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={handleSubmit}
+            sx={{
+              background: "linear-gradient(to right, #00feba, #5b86e5)",
+              color: "#000",
+              fontWeight: "bold",
+              boxShadow: "0 0 10px #00feba",
+              mb: 2,
+              ":hover": {
+                background: "linear-gradient(to right, #5b86e5, #00feba)",
+                transform: "scale(1.02)",
+              },
+            }}
+          >
+            {isRegister ? "Register" : "Log In"}
+          </Button>
+
+          <Typography align="center" variant="body2" sx={{ color: "#ccc" }}>
+            {isRegister ? (
+              <>
+                Already have an account?{" "}
+                <Button
+                  onClick={() => setIsRegister(false)}
+                  sx={{ color: "#00feba", textTransform: "none" }}
+                >
+                  Log In
+                </Button>
+              </>
+            ) : (
+              <>
+                Don’t have an account?{" "}
+                <Button
+                  onClick={() => setIsRegister(true)}
+                  sx={{ color: "#5b86e5", textTransform: "none" }}
+                >
+                  Registerr
+                </Button>
+              </>
+            )}
+          </Typography>
+
+          <Box mt={3} textAlign="center">
+            <Button
+              onClick={() => navigate("/guest-quiz-entry")}
+              sx={{
+                border: "1px solid #fff",
+                color: "#fff",
+                textTransform: "none",
+                ":hover": {
+                  borderColor: "#00feba",
+                  color: "#00feba",
+                },
+              }}
+            >
+              🚀 Have a Code? Enter Quiz
+            </Button>
+          </Box>
+        </Paper>
+      </Fade>
+    </Box>
   );
 }
 

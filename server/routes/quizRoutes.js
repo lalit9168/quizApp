@@ -1,7 +1,7 @@
-import express from 'express';
-import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
-import Quiz from '../models/Quiz.js';
+import express from "express";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import Quiz from "../models/Quiz.js";
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ async function generateUniqueQuizCode() {
   let exists = true;
 
   while (exists) {
-    code = crypto.randomBytes(3).toString('hex').toUpperCase();
+    code = crypto.randomBytes(3).toString("hex").toUpperCase();
     const existing = await Quiz.findOne({ quizCode: code });
     exists = !!existing;
   }
@@ -20,14 +20,16 @@ async function generateUniqueQuizCode() {
 }
 
 // Create a new quiz (admin only)
-router.post('/create', async (req, res) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'Unauthorized' });
+router.post("/create", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
-    const decoded = jwt.verify(token, 'your_secret_key');
-    if (decoded.role !== 'admin') {
-      return res.status(403).json({ message: 'Only admins can create quizzes' });
+    const decoded = jwt.verify(token, "your_secret_key");
+    if (decoded.role !== "admin") {
+      return res
+        .status(403)
+        .json({ message: "Only admins can create quizzes" });
     }
 
     const { title, questions } = req.body;
@@ -41,13 +43,13 @@ router.post('/create', async (req, res) => {
     });
 
     await quiz.save();
-    res.status(201).json({ message: 'Quiz created', quizCode });
+    res.status(201).json({ message: "Quiz created", quizCode });
   } catch (err) {
     console.error(err);
     if (err.code === 11000 && err.keyPattern?.quizCode) {
-      res.status(409).json({ message: 'Quiz code already exists. Try again.' });
+      res.status(409).json({ message: "Quiz code already exists. Try again." });
     } else {
-      res.status(500).json({ message: 'Error creating quiz' });
+      res.status(500).json({ message: "Error creating quiz" });
     }
   }
 });
@@ -83,19 +85,25 @@ router.post("/submit/:quizCode", async (req, res) => {
   if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
-    const decoded = jwt.verify(token, 'your_secret_key');
+    const decoded = jwt.verify(token, "your_secret_key");
     const email = decoded.email;
 
     const quiz = await Quiz.findOne({ quizCode });
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
 
-    const alreadySubmitted = quiz.submissions?.some(s => s.email === email);
+    const alreadySubmitted = quiz.submissions?.some((s) => s.email === email);
     if (alreadySubmitted) {
-      return res.status(403).json({ message: "You have already attempted this quiz." });
+      return res
+        .status(403)
+        .json({ message: "You have already attempted this quiz." });
     }
 
+    const now = new Date();
+    const date = now.toLocaleDateString();  // e.g., "06/07/2025"
+    const time = now.toLocaleTimeString();  // e.g., "2:45:12 PM"
+
     quiz.submissions = quiz.submissions || [];
-    quiz.submissions.push({ email, score });
+    quiz.submissions.push({ email, score, date, time });
 
     await quiz.save();
     res.status(200).json({ message: "Submission recorded successfully." });
@@ -113,7 +121,9 @@ router.delete("/:quizCode", async (req, res) => {
   try {
     const decoded = jwt.verify(token, "your_secret_key");
     if (decoded.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can delete quizzes" });
+      return res
+        .status(403)
+        .json({ message: "Only admins can delete quizzes" });
     }
 
     const quiz = await Quiz.findOneAndDelete({ quizCode: req.params.quizCode });
@@ -134,7 +144,9 @@ router.get("/submissions/all", async (req, res) => {
   try {
     const decoded = jwt.verify(token, "your_secret_key");
     if (decoded.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can view submissions" });
+      return res
+        .status(403)
+        .json({ message: "Only admins can view submissions" });
     }
 
     const quizzes = await Quiz.find({}, "title quizCode submissions");
@@ -153,10 +165,15 @@ router.get("/submissions/:quizCode", async (req, res) => {
   try {
     const decoded = jwt.verify(token, "your_secret_key");
     if (decoded.role !== "admin") {
-      return res.status(403).json({ message: "Only admins can view submissions" });
+      return res
+        .status(403)
+        .json({ message: "Only admins can view submissions" });
     }
 
-    const quiz = await Quiz.findOne({ quizCode: req.params.quizCode }, "submissions");
+    const quiz = await Quiz.findOne(
+      { quizCode: req.params.quizCode },
+      "submissions"
+    );
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
 
     res.json(quiz.submissions || []);
@@ -165,6 +182,5 @@ router.get("/submissions/:quizCode", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 export default router;

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Box,
   Typography,
@@ -15,13 +15,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+  Paper,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 function QuizDash() {
   const [quizzes, setQuizzes] = useState([]);
@@ -47,9 +47,12 @@ function QuizDash() {
 
   const fetchAllSubmissions = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/quizzes/submissions/all", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.get(
+        "http://localhost:5001/api/quizzes/submissions/all",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setSubmissionsData(res.data);
       setSingleQuizView(null);
       setShowSubmissions(true);
@@ -60,9 +63,12 @@ function QuizDash() {
 
   const fetchSubmissionsForQuiz = async (quizCode) => {
     try {
-      const res = await axios.get(`http://localhost:5001/api/quizzes/submissions/${quizCode}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.get(
+        `http://localhost:5001/api/quizzes/submissions/${quizCode}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setSingleQuizView({ quizCode, submissions: res.data });
       setShowSubmissions(false);
     } catch (err) {
@@ -85,15 +91,18 @@ function QuizDash() {
 
   const downloadExcelForQuiz = async (quizCode, quizTitle) => {
     try {
-      const res = await axios.get(`http://localhost:5001/api/quizzes/submissions/${quizCode}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.get(
+        `http://localhost:5001/api/quizzes/submissions/${quizCode}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       const flatData = res.data.map((sub) => ({
         "Quiz Title": quizTitle,
         "Quiz Code": quizCode,
         "User Email": sub.email,
-        "Score": sub.score
+        Score: sub.score,
       }));
 
       if (flatData.length === 0) {
@@ -129,20 +138,28 @@ function QuizDash() {
       </Typography>
 
       {isAdmin && (
-        <Button variant="contained" onClick={fetchAllSubmissions} sx={{ mb: 2 }}>
+        <Button
+          variant="contained"
+          onClick={fetchAllSubmissions}
+          sx={{ mb: 2 }}
+        >
           View All Submissions
         </Button>
       )}
 
       {showSubmissions && (
         <Box>
-          <Typography variant="h5" gutterBottom>Quiz Submissions</Typography>
+          <Typography variant="h5" gutterBottom>
+            Quiz Submissions
+          </Typography>
           {submissionsData.length === 0 ? (
             <Typography>No submissions yet.</Typography>
           ) : (
             submissionsData.map((quiz) => (
               <Box key={quiz.quizCode} sx={{ mb: 4 }}>
-                <Typography variant="h6">{quiz.title} ({quiz.quizCode})</Typography>
+                <Typography variant="h6">
+                  {quiz.title} ({quiz.quizCode})
+                </Typography>
                 <TableContainer component={Paper}>
                   <Table size="small">
                     <TableHead>
@@ -205,22 +222,30 @@ function QuizDash() {
             <Grid item xs={12} md={6} lg={4} key={quiz._id}>
               <Card>
                 <CardContent>
-                  <Typography variant="h6">{quiz.title || "Untitled Quiz"}</Typography>
+                  <Typography variant="h6">
+                    {quiz.title || "Untitled Quiz"}
+                  </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Code: <strong>{quiz.quizCode}</strong>
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
                     Questions: {quiz.questions?.length || 0}
                   </Typography>
 
                   <Stack direction="row" spacing={1} mt={2}>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      onClick={() => navigate(`/attempt/${quiz.quizCode}`)}
-                    >
-                      Attempt Quiz
-                    </Button>
+                    {!isAdmin && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => navigate(`/attempt/${quiz.quizCode}`)}
+                      >
+                        Attempt Quiz
+                      </Button>
+                    )}
                     {isAdmin && (
                       <>
                         <Button
@@ -242,7 +267,9 @@ function QuizDash() {
                           variant="outlined"
                           size="small"
                           color="success"
-                          onClick={() => downloadExcelForQuiz(quiz.quizCode, quiz.title)}
+                          onClick={() =>
+                            downloadExcelForQuiz(quiz.quizCode, quiz.title)
+                          }
                         >
                           Download Excel
                         </Button>

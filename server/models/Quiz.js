@@ -9,6 +9,8 @@ const questionSchema = new mongoose.Schema({
 const submissionSchema = new mongoose.Schema({
   email: String,
   score: Number,
+  date: String,   // 👈 Added
+  time: String,   // 👈 Added
 });
 
 const quizSchema = new mongoose.Schema({
@@ -19,4 +21,3 @@ const quizSchema = new mongoose.Schema({
 });
 
 export default mongoose.model('Quiz', quizSchema);
-
