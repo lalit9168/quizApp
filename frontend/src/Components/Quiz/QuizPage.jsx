@@ -17,9 +17,9 @@ import { jwtDecode } from "jwt-decode";
 function QuizPage() {
   const [title, setTitle] = useState("teste sample");
   const [duration, setDuration] = useState(60); // One quiz-wide duration
-  const [quizCode, setQuizCode] = useState("s");
+  const [quizCode, setQuizCode] = useState("");
   const [questions, setQuestions] = useState([
-    { questionText: "s", options: ["s", "s", "s", "s"], correctAnswer: "s" },
+    { questionText: "this is a question", options: ["option 1", "option 2", "option 3", "option 4"], correctAnswer: "option 1" },
   ]);
 
   const handleChange = (index, field, value) => {

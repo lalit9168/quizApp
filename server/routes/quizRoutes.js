@@ -3,14 +3,30 @@ import * as quizController from "../controllers/quiz.controller.js";
 
 const router = express.Router();
 
-// Simple logger middleware
+// Improved logger middleware
 function logger(req, res, next) {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.originalUrl}`);
-  next();
+  const start = Date.now();  // Capture the time when the request starts
+  
+  // Format log details
+  const logDetails = () => {
+    const duration = Date.now() - start;  // Calculate request duration
+    const status = res.statusCode;  // Capture the response status code
+
+    // Log the method, URL, status, and response time in milliseconds
+    console.log(
+      `${new Date().toISOString()} - ${req.method} ${req.originalUrl} - Status: ${status} - ${duration}ms`
+    );
+  };
+
+  // Attach a listener to log once the response is sent
+  res.on('finish', logDetails);
+  
+  next();  // Pass control to the next middleware/route handler
 }
 
 router.use(logger);
 
+// Define routes
 router.post("/create", quizController.createQuiz);
 router.get("/all", quizController.getAllQuizzes);
 router.get("/code/:quizCode", quizController.getQuizByCode);
